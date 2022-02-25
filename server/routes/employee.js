@@ -64,7 +64,7 @@ router.post('/add-employee', async (req, res) => {
 });
 
 // Delete employee from database by id
-router.delete('/:id', async (req, res) => {
+router.delete('/delete-employee/:id', async (req, res) => {
   try {
     const employee = await Employee.findById(req.params.id);
 
@@ -91,7 +91,7 @@ router.delete('/:id', async (req, res) => {
 });
 
 // Update employee from database by id
-router.put('/:id', async (req, res) => {
+router.put('/update-employee/:id', async (req, res) => {
   try {
     const id = req.params.id;
 

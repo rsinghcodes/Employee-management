@@ -4,6 +4,8 @@ const dotenv = require('dotenv');
 const morgan = require('morgan');
 
 const connect = require('./database/connect');
+const manager = require('./routes/manager');
+const employee = require('./routes/employee');
 
 dotenv.config({ path: './config/config.env' });
 
@@ -15,7 +17,8 @@ if (process.env.NODE_ENV === 'development') {
   app.use(morgan('dev'));
 }
 
-app.use('/api/manager');
+app.use('/api/manager', manager);
+app.use('/api/employee', employee);
 
 const PORT = process.env.PORT || 5000;
 

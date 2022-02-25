@@ -1,84 +1,88 @@
 const express = require('express');
-const bcrypt = require('bcryptjs');
-const jwt = require('jsonwebtoken');
+
 const {
   validateManagerSignUp,
   ValidateLogin,
 } = require('../validation/validation');
+const Manager = require('../models/Manager');
+const createToken = require('../middleware/createToken');
 
 const router = express.Router();
 
-router.post('/register', (req, res) => {
-  const { errors, isValid } = validateManagerSignUp(req.body);
-  if (!isValid) {
-    return res.status(400).json(errors);
-  }
-  User.findOne({ email: req.body.email }).then((user) => {
-    if (user) {
+router.post('/register', async (req, res) => {
+  try {
+    const { errors, isValid } = validateManagerSignUp(req.body);
+
+    if (!isValid) {
+      return res.status(400).json(errors);
+    }
+
+    // checks, if email already exists
+    const manager = await Manager.findOne({ email: req.body.email });
+
+    if (manager) {
       return res.status(400).json({ email: 'Email already exists' });
-    } else {
-      const newUser = new User({
-        name: req.body.name,
-        email: req.body.email,
-        password: req.body.password,
-        isVerified: true,
-        phone: req.body.phone,
-      });
-
-      bcrypt.genSalt(10, (err, salt) => {
-        bcrypt.hash(newUser.password, salt, (err, hash) => {
-          if (err) throw err;
-          newUser.password = hash;
-          newUser
-            .save()
-            .then((user) => res.json(user))
-            .catch((err) => console.log(err));
-        });
-      });
-    }
-  });
-});
-
-router.post('/login', (req, res) => {
-  const { errors, isValid } = ValidateLogin(req.body);
-
-  if (!isValid) {
-    return res.status(400).json(errors);
-  }
-
-  const email = req.body.email;
-  const password = req.body.password;
-
-  User.findOne({ email }).then((user) => {
-    if (!user) {
-      return res.status(404).json({ emailnotfound: 'Email not found ' });
     }
 
-    bcrypt.compare(password, user.password).then((isMatch) => {
-      if (isMatch) {
-        const payload = {
-          id: user.id,
-          name: user.name,
-          email: user.email,
-        };
-        jwt.sign(
-          payload,
-          keys.secretKey,
-          {
-            expiresIn: 31556926,
-          },
-          (err, token) => {
-            res.json({
-              success: true,
-              token: 'Bearer ' + token,
-            });
-          }
-        );
-      } else {
-        return res
-          .status(400)
-          .json({ passwordincorrect: 'Password incorrect' });
-      }
+    const { firstname, lastname, email, password, dob, address, company } =
+      req.body;
+
+    // Save manager details
+    const user = await Manager.create({
+      firstname,
+      lastname,
+      email,
+      password,
+      dob,
+      address,
+      company,
     });
-  });
+
+    const accessToken = createToken(user);
+
+    return res.status(201).json({ success: true, accessToken });
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      error: 'Server Error',
+    });
+  }
 });
+
+router.post('/login', async (req, res) => {
+  try {
+    const { errors, isValid } = ValidateLogin(req.body);
+    if (!isValid) {
+      return res.status(400).json(errors);
+    }
+
+    const { email, password } = req.body;
+
+    // checks, if email exists or not?
+    const user = await Manager.findOne({ email });
+
+    if (!user) {
+      return res.status(400).json({
+        success: false,
+        email: 'Unable to find user with that email address',
+      });
+    }
+
+    if (await user.isValidPassword(password)) {
+      const accessToken = createToken(user);
+
+      return res.status(200).json({ success: true, accessToken });
+    } else {
+      return res
+        .status(400)
+        .json({ success: false, password: 'Wrong credentials given' });
+    }
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      error: 'Server Error',
+    });
+  }
+});
+
+module.exports = router;

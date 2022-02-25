@@ -1,6 +1,7 @@
-const mongoose = require('mongoose');
+const { Schema, model } = require('mongoose');
+const bcrypt = require('bcryptjs');
 
-const ManagerSchema = new mongoose.Schema({
+const managerSchema = new Schema({
   firstname: {
     type: String,
     required: true,
@@ -32,4 +33,21 @@ const ManagerSchema = new mongoose.Schema({
   },
 });
 
-module.exports = mongoose.model('Manager', ManagerSchema);
+managerSchema.pre('save', async function (next) {
+  if (!this.isModified('password')) {
+    return next();
+  }
+
+  const salt = await bcrypt.genSalt(10);
+  const hash = await bcrypt.hash(this.password, salt);
+
+  this.password = hash;
+
+  next();
+});
+
+managerSchema.methods.isValidPassword = async function (password) {
+  return await bcrypt.compare(password, this.password);
+};
+
+module.exports = model('Manager', managerSchema);

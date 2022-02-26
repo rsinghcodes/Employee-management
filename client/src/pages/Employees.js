@@ -7,14 +7,15 @@ import CloseIcon from '@mui/icons-material/Close';
 import AddIcon from '@mui/icons-material/Add';
 import { makeStyles } from '@mui/styles';
 
-import EmployeeForm from './EmployeeForm';
-import PageHeader from '../../components/PageHeader';
-import useTable from '../../components/useTable';
-import * as employeeService from '../../services/employeeService';
-import Popup from '../../components/Popup';
-import Notification from '../../components/Notification';
-import ConfirmDialog from '../../components/ConfirmDialog';
-import ActionButton from '../../components/ActionButton';
+import EmployeeForm from '../components/EmployeeForm';
+import Header from '../components/Header';
+import PageHeader from '../components/PageHeader';
+import useTable from '../components/useTable';
+import * as employeeService from '../services/employeeService';
+import Popup from '../components/Popup';
+import Notification from '../components/Notification';
+import ConfirmDialog from '../components/ConfirmDialog';
+import ActionButton from '../components/ActionButton';
 
 const useStyles = makeStyles((theme) => ({
   pageContent: {
@@ -95,6 +96,7 @@ export default function Employees() {
 
   return (
     <>
+      <Header />
       <PageHeader
         title="Employee Management"
         subTitle="MERN assignment developed by Raghvendra Singh"

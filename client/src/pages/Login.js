@@ -1,3 +1,4 @@
+import { useEffect } from 'react';
 import * as Yup from 'yup';
 import { useFormik, Form, FormikProvider } from 'formik';
 // material
@@ -10,9 +11,17 @@ import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
 import { LoadingButton } from '@mui/lab';
 // react router
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
+import { useSelector, useDispatch } from 'react-redux';
+
+import { loginManager, managerSelector } from '../redux/reducers/authSlice';
 
 export default function Login() {
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
+  const { isLoading, isError, isAuthenticated, error } =
+    useSelector(managerSelector);
+
   const LoginSchema = Yup.object().shape({
     email: Yup.string()
       .email('Email must be a valid email address')
@@ -26,10 +35,23 @@ export default function Login() {
       password: '',
     },
     validationSchema: LoginSchema,
-    onSubmit: () => {},
+    onSubmit: () => {
+      dispatch(loginManager(values));
+    },
   });
 
-  const { errors, touched, handleSubmit, isSubmitting, getFieldProps } = formik;
+  useEffect(() => {
+    if (isAuthenticated) {
+      navigate('/');
+    }
+    if (isError) {
+      setErrors(error);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isAuthenticated, error]);
+
+  const { errors, setErrors, touched, values, handleSubmit, getFieldProps } =
+    formik;
 
   return (
     <Container component="main" maxWidth="xs">
@@ -77,7 +99,7 @@ export default function Login() {
                 fullWidth
                 variant="contained"
                 disableElevation
-                loading={isSubmitting}
+                loading={isLoading}
                 sx={{ mt: 3, mb: 2 }}
               >
                 Log In

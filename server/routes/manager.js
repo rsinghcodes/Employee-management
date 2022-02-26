@@ -75,7 +75,7 @@ router.post('/login', async (req, res) => {
     } else {
       return res
         .status(400)
-        .json({ success: false, password: 'Wrong credentials given' });
+        .json({ success: false, password: 'Password is incorrect' });
     }
   } catch (error) {
     return res.status(500).json({

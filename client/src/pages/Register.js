@@ -1,6 +1,7 @@
+import { useEffect } from 'react';
 import * as Yup from 'yup';
 import { useFormik, Form, FormikProvider } from 'formik';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import moment from 'moment';
 // material
 import Avatar from '@mui/material/Avatar';
@@ -11,8 +12,17 @@ import AccountCircleOutlinedIcon from '@mui/icons-material/AccountCircleOutlined
 import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
 import { LoadingButton } from '@mui/lab';
+// Redux
+import { useSelector, useDispatch } from 'react-redux';
+
+import { registerManager, managerSelector } from '../redux/reducers/authSlice';
 
 export default function Register() {
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
+  const { isLoading, isError, isAuthenticated, error } =
+    useSelector(managerSelector);
+
   const RegisterSchema = Yup.object().shape({
     firstname: Yup.string()
       .min(2, 'Too Short!')
@@ -46,11 +56,23 @@ export default function Register() {
       company: '',
     },
     validationSchema: RegisterSchema,
-    onSubmit: () => {},
+    onSubmit: () => {
+      dispatch(registerManager(values));
+    },
   });
 
-  const { errors, touched, values, handleSubmit, isSubmitting, getFieldProps } =
+  const { errors, setErrors, touched, values, handleSubmit, getFieldProps } =
     formik;
+
+  useEffect(() => {
+    if (isAuthenticated) {
+      navigate('/');
+    }
+    if (isError) {
+      setErrors(error);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isAuthenticated, error]);
 
   return (
     <Container component="main" maxWidth="xs">
@@ -145,7 +167,7 @@ export default function Register() {
                 fullWidth
                 variant="contained"
                 sx={{ mt: 3, mb: 2 }}
-                loading={isSubmitting}
+                loading={isLoading}
                 disableElevation
               >
                 Register

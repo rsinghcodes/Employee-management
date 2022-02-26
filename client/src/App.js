@@ -3,9 +3,10 @@ import { CssBaseline, createTheme, ThemeProvider } from '@mui/material';
 import { makeStyles } from '@mui/styles';
 import { Routes, Route } from 'react-router-dom';
 
-import Employees from './pages/Employees/Employees';
+import Employees from './pages/Employees';
 import Login from './pages/Login';
 import Register from './pages/Register';
+import PrivateRoute from './utils/PrivateRoute';
 
 const theme = createTheme({
   palette: {
@@ -31,7 +32,14 @@ function App() {
     <ThemeProvider theme={theme}>
       <div className={classes.appMain}>
         <Routes>
-          <Route path="/" element={<Employees />} />
+          <Route
+            path="/"
+            element={
+              <PrivateRoute>
+                <Employees />
+              </PrivateRoute>
+            }
+          />
           <Route path="login" element={<Login />} />
           <Route path="register" element={<Register />} />
         </Routes>

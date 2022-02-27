@@ -96,7 +96,10 @@ export default function Employees() {
   };
 
   const onDelete = (id) => {
-    setConfirmDialog(false);
+    setConfirmDialog({
+      ...confirmDialog,
+      isOpen: false,
+    });
     dispatch(deleteEmployee(id));
     setNotify({
       isOpen: true,

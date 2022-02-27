@@ -2,7 +2,7 @@ import React from 'react';
 import { Avatar, Container, Typography, Box } from '@mui/material';
 import FindInPageIcon from '@mui/icons-material/FindInPage';
 
-const NotFound = () => {
+export default function NotFound() {
   return (
     <Container component="main" maxWidth="xs" sx={{ minHeight: '100vh' }}>
       <Box
@@ -22,6 +22,4 @@ const NotFound = () => {
       </Box>
     </Container>
   );
-};
-
-export default NotFound;
+}

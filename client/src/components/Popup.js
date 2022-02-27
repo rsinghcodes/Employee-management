@@ -1,8 +1,13 @@
 import React from 'react';
-import { Dialog, DialogTitle, DialogContent, Typography } from '@mui/material';
+import {
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  Typography,
+  Button,
+} from '@mui/material';
 import { Close as CloseIcon } from '@mui/icons-material';
 import { makeStyles } from '@mui/styles';
-import ActionButton from './ActionButton';
 
 const useStyles = makeStyles((theme) => ({
   dialogWrapper: {
@@ -28,14 +33,14 @@ export default function Popup(props) {
           <Typography variant="h6" component="div" style={{ flexGrow: 1 }}>
             {title}
           </Typography>
-          <ActionButton
+          <Button
             color="secondary"
             onClick={() => {
               setOpenPopup(false);
             }}
           >
             <CloseIcon />
-          </ActionButton>
+          </Button>
         </div>
       </DialogTitle>
       <DialogContent dividers>{children}</DialogContent>

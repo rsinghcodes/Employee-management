@@ -1,7 +1,11 @@
 {
   "name": "client",
   "version": "0.1.0",
+  "description": "Frontend for Mindbowser assignment",
   "private": true,
+  "author": {
+    "name": "Raghvendra Singh"
+  },
   "dependencies": {
     "@emotion/react": "^11.8.1",
     "@emotion/styled": "^11.8.1",
@@ -19,6 +23,7 @@
     "moment": "^2.29.1",
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
+    "react-error-boundary": "^3.1.4",
     "react-redux": "^7.2.6",
     "react-router-dom": "^6.2.1",
     "react-scripts": "5.0.0",

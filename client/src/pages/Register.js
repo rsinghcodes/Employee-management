@@ -14,7 +14,6 @@ import Container from '@mui/material/Container';
 import { LoadingButton } from '@mui/lab';
 // Redux
 import { useSelector, useDispatch } from 'react-redux';
-
 import { registerManager, managerSelector } from '../redux/reducers/authSlice';
 
 export default function Register() {
@@ -23,6 +22,7 @@ export default function Register() {
   const { isLoading, isError, isAuthenticated, error } =
     useSelector(managerSelector);
 
+  // Form validation
   const RegisterSchema = Yup.object().shape({
     firstname: Yup.string()
       .min(2, 'Too Short!')

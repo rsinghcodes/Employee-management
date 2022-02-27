@@ -12,8 +12,8 @@ import Container from '@mui/material/Container';
 import { LoadingButton } from '@mui/lab';
 // react router
 import { Link, useNavigate } from 'react-router-dom';
+// Redux
 import { useSelector, useDispatch } from 'react-redux';
-
 import { loginManager, managerSelector } from '../redux/reducers/authSlice';
 
 export default function Login() {
@@ -22,6 +22,7 @@ export default function Login() {
   const { isLoading, isError, isAuthenticated, error } =
     useSelector(managerSelector);
 
+  // Form validation
   const LoginSchema = Yup.object().shape({
     email: Yup.string()
       .email('Email must be a valid email address')

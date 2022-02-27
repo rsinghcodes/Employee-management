@@ -76,11 +76,11 @@ router.delete('/delete-employee/:id', async (req, res) => {
       });
     }
 
-    await employee.remove();
+    const user = await employee.remove();
 
     return res.status(200).json({
       success: true,
-      message: 'Data deleted successfully',
+      data: user,
     });
   } catch (err) {
     return res.status(500).json({
@@ -106,16 +106,14 @@ router.put('/update-employee/:id', async (req, res) => {
     }
 
     if (!req.body) {
-      return res
-        .status(400)
-        .send({ message: 'Data to update can not be empty' });
+      return res.status(400).send({ error: 'Data to update can not be empty' });
     }
 
-    await Employee.findByIdAndUpdate(id, req.body);
+    const user = await Employee.findByIdAndUpdate(id, req.body, { new: true });
 
     return res.status(200).json({
       success: true,
-      message: 'Data updated successfully',
+      data: user,
     });
   } catch (err) {
     return res.status(500).json({

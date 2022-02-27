@@ -1,21 +1,35 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 // material
 import PeopleOutlineTwoToneIcon from '@mui/icons-material/PeopleOutlineTwoTone';
-import { Paper, TableBody, TableRow, TableCell, Button } from '@mui/material';
+import {
+  Paper,
+  TableBody,
+  TableRow,
+  TableCell,
+  Button,
+  TableHead,
+  Table,
+} from '@mui/material';
 import EditOutlinedIcon from '@mui/icons-material/EditOutlined';
 import CloseIcon from '@mui/icons-material/Close';
 import AddIcon from '@mui/icons-material/Add';
 import { makeStyles } from '@mui/styles';
-
+// components
 import EmployeeForm from '../components/EmployeeForm';
 import Header from '../components/Header';
 import PageHeader from '../components/PageHeader';
-import useTable from '../components/useTable';
-import * as employeeService from '../services/employeeService';
 import Popup from '../components/Popup';
 import Notification from '../components/Notification';
 import ConfirmDialog from '../components/ConfirmDialog';
-import ActionButton from '../components/ActionButton';
+// Redux
+import { useSelector, useDispatch } from 'react-redux';
+import {
+  createEmployee,
+  deleteEmployee,
+  employeeSelector,
+  fetchEmployees,
+  updateEmployee,
+} from '../redux/reducers/employeeSlice';
 
 const useStyles = makeStyles((theme) => ({
   pageContent: {
@@ -28,24 +42,21 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 const headCells = [
+  { id: 'empId', label: 'Employee Id' },
   { id: 'fullName', label: 'Employee Name' },
   { id: 'email', label: 'Email' },
   { id: 'mobile', label: 'Mobile Number' },
   { id: 'dob', label: 'Date of Birth' },
   { id: 'address', label: 'Address' },
   { id: 'city', label: 'City' },
-  { id: 'actions', label: 'Actions', disableSorting: true },
+  { id: 'actions', label: 'Actions' },
 ];
 
 export default function Employees() {
   const classes = useStyles();
+  const dispatch = useDispatch();
+  const { employees } = useSelector(employeeSelector);
   const [recordForEdit, setRecordForEdit] = useState(null);
-  const [records, setRecords] = useState(employeeService.getAllEmployees());
-  const [filterFn] = useState({
-    fn: (items) => {
-      return items;
-    },
-  });
   const [openPopup, setOpenPopup] = useState(false);
   const [notify, setNotify] = useState({
     isOpen: false,
@@ -58,21 +69,25 @@ export default function Employees() {
     subTitle: '',
   });
 
-  const { TblContainer, TblHead, TblPagination, recordsAfterPagingAndSorting } =
-    useTable(records, headCells, filterFn);
-
   const addOrEdit = (employee, resetForm) => {
-    if (employee.id == 0) employeeService.insertEmployee(employee);
-    else employeeService.updateEmployee(employee);
+    if (employee._id == null) {
+      dispatch(createEmployee(employee));
+      setNotify({
+        isOpen: true,
+        message: 'Data Added Successfully',
+        type: 'success',
+      });
+    } else {
+      dispatch(updateEmployee(employee));
+      setNotify({
+        isOpen: true,
+        message: 'Data Updated Successfully',
+        type: 'success',
+      });
+    }
     resetForm();
     setRecordForEdit(null);
     setOpenPopup(false);
-    setRecords(employeeService.getAllEmployees());
-    setNotify({
-      isOpen: true,
-      message: 'Submitted Successfully',
-      type: 'success',
-    });
   };
 
   const openInPopup = (item) => {
@@ -81,18 +96,19 @@ export default function Employees() {
   };
 
   const onDelete = (id) => {
-    setConfirmDialog({
-      ...confirmDialog,
-      isOpen: false,
-    });
-    employeeService.deleteEmployee(id);
-    setRecords(employeeService.getAllEmployees());
+    setConfirmDialog(false);
+    dispatch(deleteEmployee(id));
     setNotify({
       isOpen: true,
       message: 'Deleted Successfully',
       type: 'error',
     });
   };
+
+  useEffect(() => {
+    dispatch(fetchEmployees());
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   return (
     <>
@@ -108,53 +124,65 @@ export default function Employees() {
           startIcon={<AddIcon />}
           onClick={() => {
             setOpenPopup(true);
+            setRecordForEdit(null);
           }}
         >
           Add New Employee
         </Button>
       </PageHeader>
       <Paper className={classes.pageContent}>
-        <TblContainer>
-          <TblHead />
+        <Table>
+          <TableHead>
+            <TableRow>
+              {headCells.map((headCell) => (
+                <TableCell key={headCell.id}>{headCell.label}</TableCell>
+              ))}
+            </TableRow>
+          </TableHead>
           <TableBody>
-            {recordsAfterPagingAndSorting().map((item) => (
-              <TableRow key={item.id}>
-                <TableCell>{item.fullName}</TableCell>
+            {employees.map((item) => (
+              <TableRow key={item._id}>
+                <TableCell>{item.empId}</TableCell>
+                <TableCell>
+                  {item.firstname} {item.lastname}
+                </TableCell>
                 <TableCell>{item.email}</TableCell>
                 <TableCell>{item.mobile}</TableCell>
                 <TableCell>{item.dob}</TableCell>
                 <TableCell>{item.address}</TableCell>
                 <TableCell>{item.city}</TableCell>
                 <TableCell>
-                  <ActionButton
+                  <Button
                     color="primary"
+                    variant="outlined"
                     onClick={() => {
                       openInPopup(item);
                     }}
                   >
                     <EditOutlinedIcon fontSize="small" />
-                  </ActionButton>
-                  <ActionButton
+                  </Button>
+                  <Button
                     color="secondary"
+                    variant="contained"
+                    disableElevation
                     onClick={() => {
                       setConfirmDialog({
                         isOpen: true,
-                        title: 'Are you sure to delete this record?',
-                        subTitle: "You can't undo this operation",
+                        title: 'Are you sure want to delete this record?',
+                        subTitle: "You can't undo this action",
                         onConfirm: () => {
-                          onDelete(item.id);
+                          onDelete(item._id);
                         },
                       });
                     }}
                   >
                     <CloseIcon fontSize="small" />
-                  </ActionButton>
+                  </Button>
                 </TableCell>
               </TableRow>
             ))}
           </TableBody>
-        </TblContainer>
-        <TblPagination />
+        </Table>
       </Paper>
       <Popup
         title="Employee Form"

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import * as Yup from 'yup';
 import 'yup-phone';
 import moment from 'moment';
@@ -8,8 +8,7 @@ import { useFormik, Form, FormikProvider } from 'formik';
 import { Grid, Stack, TextField } from '@mui/material';
 import { LoadingButton } from '@mui/lab';
 
-export default function EmployeeForm(props) {
-  const { addOrEdit, recordForEdit } = props;
+export default function EmployeeForm({ addOrEdit, recordForEdit }) {
   const random = uniqueRandom(10000, 100000);
 
   const RegisterSchema = Yup.object().shape({
@@ -38,7 +37,7 @@ export default function EmployeeForm(props) {
 
   const formik = useFormik({
     initialValues: {
-      empId: random(),
+      empId: random().toString(),
       firstname: '',
       lastname: '',
       email: '',
@@ -48,11 +47,29 @@ export default function EmployeeForm(props) {
       city: '',
     },
     validationSchema: RegisterSchema,
-    onSubmit: () => {},
+    onSubmit: () => {
+      addOrEdit(values, resetForm);
+    },
   });
 
-  const { errors, touched, values, handleSubmit, isSubmitting, getFieldProps } =
-    formik;
+  const {
+    errors,
+    touched,
+    values,
+    setValues,
+    resetForm,
+    handleSubmit,
+    isSubmitting,
+    getFieldProps,
+  } = formik;
+
+  useEffect(() => {
+    if (recordForEdit != null)
+      setValues({
+        ...recordForEdit,
+      });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [recordForEdit]);
 
   return (
     <FormikProvider value={formik}>

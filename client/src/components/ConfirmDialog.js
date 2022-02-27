@@ -4,64 +4,39 @@ import {
   DialogTitle,
   DialogContent,
   DialogActions,
-  Typography,
-  IconButton,
+  DialogContentText,
   Button,
 } from '@mui/material';
-import { makeStyles } from '@mui/styles';
-import { NotListedLocation as NotListedLocationIcon } from '@mui/icons-material';
-
-const useStyles = makeStyles((theme) => ({
-  dialog: {
-    padding: theme.spacing(2),
-    position: 'absolute',
-    top: theme.spacing(5),
-  },
-  dialogTitle: {
-    textAlign: 'center',
-  },
-  dialogContent: {
-    textAlign: 'center',
-  },
-  dialogAction: {
-    justifyContent: 'center',
-  },
-  titleIcon: {
-    backgroundColor: theme.palette.secondary.light,
-    color: theme.palette.secondary.main,
-    '&:hover': {
-      backgroundColor: theme.palette.secondary.light,
-      cursor: 'default',
-    },
-    '& .MuiSvgIcon-root': {
-      fontSize: '8rem',
-    },
-  },
-}));
 
 export default function ConfirmDialog(props) {
   const { confirmDialog, setConfirmDialog } = props;
-  const classes = useStyles();
 
   return (
-    <Dialog open={confirmDialog.isOpen} classes={{ paper: classes.dialog }}>
-      <DialogTitle className={classes.dialogTitle}>
-        <IconButton disableRipple className={classes.titleIcon}>
-          <NotListedLocationIcon />
-        </IconButton>
-      </DialogTitle>
-      <DialogContent className={classes.dialogContent}>
-        <Typography variant="h6">{confirmDialog.title}</Typography>
-        <Typography variant="subtitle2">{confirmDialog.subTitle}</Typography>
+    <Dialog
+      open={confirmDialog.isOpen}
+      onClose={() => setConfirmDialog(false)}
+      aria-labelledby="alert-dialog-title"
+      aria-describedby="alert-dialog-description"
+    >
+      <DialogTitle id="alert-dialog-title">{confirmDialog.title}</DialogTitle>
+      <DialogContent>
+        <DialogContentText id="alert-dialog-description">
+          {confirmDialog.subTitle}
+        </DialogContentText>
       </DialogContent>
-      <DialogActions className={classes.dialogAction}>
+      <DialogActions>
         <Button
-          color="default"
           onClick={() => setConfirmDialog({ ...confirmDialog, isOpen: false })}
         >
           No
         </Button>
-        <Button color="secondary" onClick={confirmDialog.onConfirm}>
+        <Button
+          color="secondary"
+          variant="contained"
+          onClick={confirmDialog.onConfirm}
+          autoFocus
+          disableElevation
+        >
           Yes
         </Button>
       </DialogActions>

@@ -1,16 +1,20 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { ErrorBoundary } from 'react-error-boundary';
 import { Routes, Route } from 'react-router-dom';
 // material
 import { CssBaseline, createTheme, ThemeProvider } from '@mui/material';
 import { makeStyles } from '@mui/styles';
+// Redux
+import { useDispatch } from 'react-redux';
+import { setUser } from './redux/reducers/authSlice';
 // Pages
 import Employees from './pages/Employees';
 import Login from './pages/Login';
 import Register from './pages/Register';
 import PrivateRoute from './utils/PrivateRoute';
+import NotFound from './pages/NotFound';
+// component
 import ErrorFallback from './components/ErrorFallback';
-import NotFound from './pages/404';
 
 const theme = createTheme({
   palette: {
@@ -35,6 +39,13 @@ const useStyles = makeStyles({
 
 function App() {
   const classes = useStyles();
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    dispatch(setUser());
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   return (
     <ThemeProvider theme={theme}>
       <div className={classes.appMain}>

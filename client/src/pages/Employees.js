@@ -46,7 +46,7 @@ const headCells = [
   { id: 'fullName', label: 'Employee Name' },
   { id: 'email', label: 'Email' },
   { id: 'mobile', label: 'Mobile Number' },
-  { id: 'dob', label: 'Date of Birth' },
+  { id: 'dob', label: 'DOB (MM/DD/YYYY)' },
   { id: 'address', label: 'Address' },
   { id: 'city', label: 'City' },
   { id: 'actions', label: 'Actions' },

@@ -7,7 +7,6 @@ export const loginManager = createAsyncThunk(
   async (userData, thunkAPI) => {
     try {
       const res = await axios.post('/api/manager/login', userData);
-
       const { accessToken } = res.data;
       localStorage.setItem('token', accessToken);
       // Decode token to get user data
@@ -25,7 +24,6 @@ export const registerManager = createAsyncThunk(
   async (userData, thunkAPI) => {
     try {
       const res = await axios.post('/api/manager/register', userData);
-
       const { accessToken } = res.data;
       localStorage.setItem('token', accessToken);
       // Decode token to get user data
@@ -51,6 +49,13 @@ export const authSlice = createSlice({
     logout: (state, action) => {
       state.user = null;
       localStorage.removeItem('token');
+    },
+    setUser: (state, action) => {
+      const accessToken = localStorage.getItem('token');
+      if (accessToken != null) {
+        state.user = jwt_decode(accessToken);
+        state.isAuthenticated = true;
+      }
     },
   },
   extraReducers: {
@@ -83,7 +88,7 @@ export const authSlice = createSlice({
   },
 });
 
-export const { logout } = authSlice.actions;
+export const { logout, setUser } = authSlice.actions;
 export const managerSelector = (state) => state.auth;
 
 export default authSlice.reducer;

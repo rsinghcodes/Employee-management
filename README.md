@@ -1,6 +1,6 @@
 ## Employee Management
 
-> Mindbowser's Assessment - Employee Management
+> CRUD operations on Employees 
 
 ## 🚧 Technology Used
 
